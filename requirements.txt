@@ -1,0 +1,19 @@
+# Core ML / DL
+tensorflow>=2.12.0
+# Keras 3.x is a standalone package that breaks keras.preprocessing.image.*
+# tf.keras (bundled with TensorFlow) retains full backward compatibility.
+# Do NOT install standalone keras>=3.0 with TensorFlow.
+# keras<3.0          # leave commented — tf.keras bundled with TF is used instead
+numpy>=1.23.0
+Pillow>=9.4.0
+
+# Flask web app
+Flask>=2.3.0
+Werkzeug>=2.3.0
+gunicorn>=21.0.0
+
+# Data Science / Evaluation
+scikit-learn>=1.2.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+pandas>=1.5.0

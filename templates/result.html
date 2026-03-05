@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MalariaAI — Result</title>
+    <meta name="description" content="Malaria detection result from blood smear image analysis." />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body>
+
+    <!-- ── Navigation ──────────────────────────────────────────────────── -->
+    <nav class="navbar">
+        <a class="nav-brand" href="{{ url_for('index') }}">
+            <span class="logo-icon">🔬</span>
+            <span>MalariaAI</span>
+        </a>
+        <span class="nav-badge">Deep Learning</span>
+    </nav>
+
+    <!-- ── Result Container ─────────────────────────────────────────────── -->
+    <main class="result-container">
+
+        <!-- Hero -->
+        <div class="result-hero">
+            <p
+                style="font-size:0.8rem; color: var(--text-secondary); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:0.5rem;">
+                Analysis Complete
+            </p>
+            <h1>Blood Smear Classification</h1>
+
+            <!-- Verdict Badge -->
+            {% if result.label == 'Parasitized' %}
+            <div class="verdict-badge parasitized">🦟 {{ result.label }}</div>
+            {% else %}
+            <div class="verdict-badge uninfected">✅ {{ result.label }}</div>
+            {% endif %}
+        </div>
+
+        <!-- ── Result Grid ─────────────────────────────────────────────────── -->
+        <div class="result-grid">
+
+            <!-- Image Card -->
+            <div class="result-image-card">
+                <img src="{{ result.image_url }}" alt="Analysed blood smear" />
+                <div class="result-image-label">📷 Uploaded Blood Smear Image</div>
+            </div>
+
+            <!-- Metrics Card -->
+            <div class="metrics-card">
+
+                <!-- Prediction -->
+                <div class="metric-row">
+                    <span class="metric-label">Prediction</span>
+                    <span class="metric-value" style="
+            color: {{ '#f87171' if result.label == 'Parasitized' else '#4ade80' }}">
+                        {{ result.label }}
+                    </span>
+                </div>
+
+                <!-- Confidence % -->
+                <div class="metric-row">
+                    <span class="metric-label">Confidence</span>
+                    <span class="confidence-percent {{ result.label | lower }}">
+                        {{ result.confidence }}%
+                    </span>
+                    <div class="confidence-bar-track">
+                        <div class="confidence-bar-fill fill-{{ result.label | lower }}" id="confidenceBarFill"
+                            data-target="{{ result.confidence }}" style="width: 0%;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Raw Score -->
+                <div class="metric-row">
+                    <span class="metric-label">Raw Sigmoid Score</span>
+                    <span class="metric-value"
+                        style="font-family: monospace; font-size: 0.95rem; color: var(--text-secondary);">
+                        {{ result.raw_score }}
+                    </span>
+                </div>
+
+                <!-- Class Index -->
+                <div class="metric-row">
+                    <span class="metric-label">Class Index</span>
+                    <span class="metric-value" style="color: var(--text-secondary); font-size: 0.9rem;">
+                        {{ result.class_index }} / 1
+                    </span>
+                </div>
+
+                <!-- Threshold Note -->
+                <div class="metric-row" style="padding-top: 0.5rem; border-top: 1px solid var(--border-glass);">
+                    <span class="metric-label">Decision Threshold</span>
+                    <span class="metric-value" style="font-size: 0.9rem; color: var(--text-secondary);">
+                        σ(x) ≥ 0.5 → Uninfected
+                    </span>
+                </div>
+
+            </div>
+        </div>
+        <!-- end result-grid -->
+
+        <!-- ── Warning / Safe Banner ──────────────────────────────────────── -->
+        {% if result.label == 'Parasitized' %}
+        <div class="result-banner danger" style="margin-top: 1.5rem;">
+            <span style="font-size: 1.3rem;">⚠️</span>
+            <div>
+                <strong>Malaria Parasite Detected.</strong> This blood smear shows signs of
+                <em>Plasmodium</em> infection. Please consult a qualified medical professional
+                immediately for diagnosis and treatment.
+            </div>
+        </div>
+        {% else %}
+        <div class="result-banner success" style="margin-top: 1.5rem;">
+            <span style="font-size: 1.3rem;">✅</span>
+            <div>
+                <strong>No Parasite Detected.</strong> The blood smear appears uninfected.
+                This is an AI prediction — please follow up with a certified pathologist
+                for a complete diagnosis.
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- ── Disclaimer Box ─────────────────────────────────────────────── -->
+        <div style="
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius);
+      padding: 1rem 1.4rem;
+      margin-top: 1rem;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    ">
+            ⚕️ <strong>Medical Disclaimer:</strong> This tool is intended for educational and research
+            purposes only. It does not constitute a medical diagnosis. Always verify AI predictions
+            with a licensed healthcare professional and proper laboratory tests.
+        </div>
+
+        <!-- ── CTA Buttons ────────────────────────────────────────────────── -->
+        <div class="result-actions">
+            <a href="{{ url_for('index') }}" class="btn-primary">
+                🔬 Analyse Another Image
+            </a>
+            <button onclick="window.print()" class="btn-secondary">
+                🖨️ Print Report
+            </button>
+        </div>
+
+        <!-- ── Model Info ─────────────────────────────────────────────────── -->
+        <div style="
+      margin-top: 1.8rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 0.75rem;
+    ">
+            <div class="info-panel">
+                <div class="info-panel-icon">🧠</div>
+                <h3>Model Used</h3>
+                <p>Best model auto-selected by validation AUC during training.</p>
+            </div>
+            <div class="info-panel">
+                <div class="info-panel-icon">📏</div>
+                <h3>Input Size</h3>
+                <p>Image resized to 224 × 224 px and normalised to [0, 1].</p>
+            </div>
+            <div class="info-panel">
+                <div class="info-panel-icon">🎯</div>
+                <h3>Architecture</h3>
+                <p>Custom CNN + MobileNetV2 with fine-tuned top layers.</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ── Footer ───────────────────────────────────────────────────────── -->
+    <footer>
+        <p>Built with <strong>TensorFlow</strong>, <strong>Keras</strong> &amp; <strong>Flask</strong> &nbsp;|&nbsp;
+            Final Year Project — Malaria Detection</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+
+</html>

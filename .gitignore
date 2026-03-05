@@ -1,0 +1,37 @@
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+venv/
+env/
+.env
+*.env
+
+# Dataset (large — download separately from Kaggle)
+dataset/
+
+# Trained models (large binary files)
+models/*.h5
+models/*.keras
+
+# Upload temp files
+uploads/
+
+# IDE / OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build artifacts
+*.egg-info/
+dist/
+build/
