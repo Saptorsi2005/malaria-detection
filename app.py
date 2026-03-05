@@ -170,3 +170,27 @@ def health():
 
 
 # Serve uploaded images so the result page can display them
+from flask import send_from_directory
+
+@app.route("/uploads/<path:filename>")
+def uploaded_file(filename: str):
+    return send_from_directory(str(UPLOAD_FOLDER), filename)
+
+
+# ─── Error Handlers ───────────────────────────────────────────────────────────
+
+@app.errorhandler(413)
+def file_too_large(e):
+    flash(f"File too large. Maximum allowed size is {MAX_CONTENT_LENGTH_MB} MB.", "error")
+    return redirect(url_for("index"))
+
+
+@app.errorhandler(404)
+def not_found(e):
+    return render_template("index.html"), 404
+
+
+# ─── Entry Point ──────────────────────────────────────────────────────────────
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
